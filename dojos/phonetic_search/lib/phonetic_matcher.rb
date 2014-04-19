@@ -1,4 +1,4 @@
-class Normaliser
+class PhoneticMatcher 
 
   def alphabetise text
     text.gsub(/[^a-zA-Z\s]/, '')
