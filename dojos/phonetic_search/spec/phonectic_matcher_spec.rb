@@ -1,18 +1,18 @@
 require_relative "../lib/phonetic_matcher"
 
 describe PhoneticMatcher do
-  
+
   let (:surnames_text) {
     surnames = []
-    
-    File.open("surnames.txt", "r") do |f|
+    file_address = File.join(File.dirname(__FILE__), "surnames.txt")
+    File.open(file_address, "r") do |f|
       f.each_line do |line|
         surnames << line.delete("\n")
       end
     end
 
     return surnames
-  } 
+  }
 
   describe "alphabetising text" do
     it 'will remove all non-alphabetical characters' do
@@ -90,7 +90,7 @@ describe PhoneticMatcher do
 
   describe "finding surname matches" do
     it "will return an array of matches if found" do
-      subject.generate_surname_map surnames_text 
+      subject.generate_surname_map surnames_text
       expect(subject.find_match "Jones").to eq ["Jonas", "Johns", "Saunas"]
     end
 
