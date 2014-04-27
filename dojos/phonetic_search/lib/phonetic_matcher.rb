@@ -1,14 +1,26 @@
 #!/usr/bin/env ruby
+require ("benchmark")
 
 module Phonetic
 
   def self.run
-    matcher = PhoneticMatcher.new
-    matcher.generate_surname_map $stdin.read.lines.map(&:chomp)
-    puts ARGV
-    ARGV.each do |name|
-      puts "#{name} matches: #{(matcher.find_match name).join ','}"
+    time = Benchmark.realtime do
+      matcher = PhoneticMatcher.new
+
+      buildTime = Benchmark.realtime do
+        matcher.generate_surname_map $stdin.read.lines.map(&:chomp)
+      end
+      puts "Generating hash took: #{buildTime}"
+
+      subTime = Benchmark.realtime do
+        ARGV.each do |name|
+          puts "#{name} matches: #{(matcher.find_match name).join ','}"
+        end
+      end
+      puts "Finding match took: #{subTime}"
+
     end
+    puts "Overall took: #{time}"
   end
 
   class PhoneticMatcher
