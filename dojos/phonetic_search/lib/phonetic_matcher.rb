@@ -61,7 +61,7 @@ module Phonetic
         end
       }
 
-      return (char == " " ? " " : "*")
+      return (char == " " ? " " : char)
     end
 
     def generate_surname_map surnames
