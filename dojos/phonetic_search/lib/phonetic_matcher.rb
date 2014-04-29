@@ -77,7 +77,6 @@ module Phonetic
         end
       }
 
-      puts @surname_map
       return @surname_map
     end
 
