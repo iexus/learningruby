@@ -1,6 +1,6 @@
 require_relative "../lib/phonetic_matcher"
 
-describe PhoneticMatcher do
+describe Phonetic::PhoneticMatcher do
 
   let (:surnames_text) {
     surnames = []
@@ -43,23 +43,23 @@ describe PhoneticMatcher do
 
   describe "generating possible matches" do
     it "will generate a coded key of possible matches" do
-      expect(subject.generate_match_key "aeiou").to eq "00000"
-      expect(subject.generate_match_key "cgjkqsxyz").to eq "111111111"
-      expect(subject.generate_match_key "bfpvw").to eq "22222"
-      expect(subject.generate_match_key "dt").to eq "33"
-      expect(subject.generate_match_key "mn").to eq "44"
+      expect(subject.generate_match_key "acbdm").to eq "01234"
+      expect(subject.generate_match_key "egftn").to eq "01234"
+      expect(subject.generate_match_key "d").to eq "3"
+      expect(subject.generate_match_key "n").to eq "4"
     end
 
     it "will not care about case" do
       expect(subject.generate_match_key "ACBDM").to eq "01234"
     end
 
-    it "will add *'s in place of letters which do not matter" do
-      expect(subject.generate_match_key "hlr").to eq "***"
+    it "will add not replace letters which do not have an equivalent" do
+      expect(subject.generate_match_key "hlr").to eq "hlr"
     end
 
     it "will consider consecutive letters as one instance" do
-      expect(subject.generate_match_key "aaabbccchhh").to eq "021*"
+      expect(subject.generate_match_key "aaabbccchhh").to eq "021h"
+      expect(subject.generate_match_key "aeiou").to eq "0"
     end
   end
 
