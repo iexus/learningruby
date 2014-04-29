@@ -51,7 +51,7 @@ module Phonetic
     end
 
     def generate_match_key text
-      text.squeeze.downcase.chars.map { |c| key_for_char c }.join
+      text.downcase.chars.map { |c| key_for_char c }.join.squeeze
     end
 
     def key_for_char char
@@ -77,6 +77,7 @@ module Phonetic
         end
       }
 
+      puts @surname_map
       return @surname_map
     end
 
