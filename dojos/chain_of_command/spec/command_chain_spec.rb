@@ -87,7 +87,6 @@ describe CommandChain do
     end
 
     it "will look across the organisation" do
-      puts @chain.employees
       expect(@chain.message(10, 21)).to eq ([bob, bobs_boss, root, simon, paul])
     end
   end
