@@ -11,9 +11,12 @@ The arrows denote directions of communication (-> is up <- is down the chain).
 In order to do this you must read in a text file containing information on the employees organisation in the following format:
 
 EmpID  |  EmpName  |  BossID
+
   1    |   Mr.Big   |
-  13   |  Sally  |  1
-2  |  Bert  |  13
+  
+  13   |  Sally  |  1  
+  
+2  |  Bert  |  13  
 
 Ordering is not guaranteed in the file (as records are updated constantly) nor is the premise that a lower ID means a senior staff member (keys are reused!).
 Information in the file will be seperated by a pipe character `|`.
