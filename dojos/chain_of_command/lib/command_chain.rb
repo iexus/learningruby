@@ -1,5 +1,6 @@
 class CommandChain
-
+  attr_reader :employees
+  
   def initialize
     @employees = Hash.new
   end
@@ -8,18 +9,96 @@ class CommandChain
     @employees[employee.id] = employee
   end
 
-  def message from_id, to_id
-    direction = "->"
-    
-    #are we sending from the boss?
-    if from_id == @employees[to_id].boss_id
-      direction = "<-"
+  def find_boss employee
+    @employees.each_value do |value|
+      if value.id == employee.boss_id
+        return value
+      end
     end
 
-    return "#{@employees[from_id].name} #{direction} #{@employees[to_id].name}"
+    #We didn't find anyone, so either root or no match.
+    return nil
   end
 
-  Employee = Struct.new(:id, :name, :boss_id)
+  def message from_id, to_id
+    start = @employees[from_id]
+    path = []
+    start.do_you_know(to_id, from_id, path)
+    return path
+  end
+
+  def build_chain
+    @employees.each_value do |value|
+      value.reset
+    end
+
+    @employees.each_value do |value|
+      boss = find_boss(value)
+      boss.add_child(value) unless boss == nil
+      value.add_boss(boss) unless boss == nil
+    end
+  end
+
+  class Employee
+    attr_reader :id
+    attr_reader :name
+    attr_reader :boss_id
+    attr_reader :boss
+    attr_reader :children
+
+    def initialize id, name, boss_id
+      @id = id
+      @name = name
+      @boss_id = boss_id
+      @boss = nil
+      @children = []
+    end
+
+    def reset
+      @children = []
+      @boss = nil
+    end
+
+    def inspect
+      "employee #{@name}"
+    end
+
+    def add_child child
+      @children << child
+    end
+
+    def add_boss boss
+      @boss = boss
+    end
+
+    def do_you_know this_id, origin_id, current_path
+      my_path = current_path << self
+      
+      if this_id == @id
+        return my_path
+      elsif this_id == @boss_id
+        return (my_path << @boss)        
+      end
+
+      #if here no match, ask the children!
+      @children.each do |value|
+        if value.id != origin_id
+          if value.do_you_know(this_id, @id, my_path) != nil
+            return my_path
+          end
+        end
+      end
+
+      #Children don't know, resort to boss!
+      if @boss.id != origin_id
+        if @boss.do_you_know(this_id, @id, my_path) != nil
+          return my_path
+        end
+      end
+
+      return nil
+    end
+  end
 
   class Reader
     def create_from_record line
