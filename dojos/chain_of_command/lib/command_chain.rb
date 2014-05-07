@@ -1,6 +1,6 @@
 class CommandChain
   attr_reader :employees
-  
+
   def initialize
     @employees = Hash.new
   end
@@ -21,9 +21,9 @@ class CommandChain
   end
 
   def message from_id, to_id
+    puts " "
     start = @employees[from_id]
-    path = []
-    start.do_you_know(to_id, from_id, path)
+    path = start.do_you_know(to_id, from_id, [])
     return path
   end
 
@@ -37,6 +37,24 @@ class CommandChain
       boss.add_child(value) unless boss == nil
       value.add_boss(boss) unless boss == nil
     end
+  end
+
+  def format_route route
+    output = ""
+    previous = nil
+    route.each do |node|
+      if previous != nil
+        if node.id == previous.boss_id
+          output += "->"
+        else
+          output += "<-"
+        end
+      end
+      output += " #{node.name} "
+      previous = node
+    end
+
+    return output
   end
 
   class Employee
@@ -72,43 +90,36 @@ class CommandChain
     end
 
     def do_you_know this_id, origin_id, current_path
-      my_path = current_path << self
-      
+      my_path = (current_path.dup) << self
       if this_id == @id
         return my_path
-      elsif this_id == @boss_id
-        return (my_path << @boss)        
       end
 
-      #if here no match, ask the children!
       @children.each do |value|
         if value.id != origin_id
-          if value.do_you_know(this_id, @id, my_path) != nil
-            return my_path
+          new_path = value.do_you_know(this_id, @id, my_path)
+          if new_path != nil
+            return new_path
           end
         end
       end
 
-      #Children don't know, resort to boss!
       if @boss.id != origin_id
-        if @boss.do_you_know(this_id, @id, my_path) != nil
-          return my_path
+        boss_new_path = @boss.do_you_know(this_id, @id, my_path)
+        if boss_new_path != nil
+          return boss_new_path
         end
       end
 
       return nil
     end
+
   end
 
   class Reader
     def create_from_record line
-
       attr = line.split("|")
-      id = attr[0].to_i
-      name = attr[1].strip
-      boss_id = attr[2].to_i
-
-      Employee.new(id, name, boss_id)
+      Employee.new(attr[0].to_i, attr[1].strip, attr[2].to_i)
     end
   end
 end
