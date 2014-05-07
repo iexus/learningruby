@@ -25,20 +25,20 @@ describe CommandChain do
   let(:root) {CommandChain::Employee.new(1, "Root", 0)}
   let(:bob) {CommandChain::Employee.new(10, "Bob", 5)}
   let(:bobs_boss) {CommandChain::Employee.new(5, "Bob's Boss", 1)}
-  let(:simon) {CommandChain::Employee.new(2, "Simon", 1)}
-  let(:paul) {CommandChain::Employee.new(21, "Paul", 2)}
-  let(:peter) {CommandChain::Employee.new(99, "Peter", 2)}
-  let(:homer) {CommandChain::Employee.new(150, "Homer", 99)}
+  let(:simon) {CommandChain::Employee.new(24, "Simon", 1)}
+  let(:paul) {CommandChain::Employee.new(21, "Paul", 24)}
+  let(:peter) {CommandChain::Employee.new(99, "Peter", 24)}
+  let(:homer) {CommandChain::Employee.new(35, "Homer", 1)}
 
   before() {
     @chain = CommandChain.new
+    @chain.add_employee homer
     @chain.add_employee root
+    @chain.add_employee paul
+    @chain.add_employee peter
     @chain.add_employee bob
     @chain.add_employee bobs_boss
     @chain.add_employee simon
-    @chain.add_employee paul
-    @chain.add_employee peter
-    @chain.add_employee homer
     @chain.build_chain
   }
 
@@ -57,7 +57,6 @@ describe CommandChain do
       @chain.add_employee sally
       @chain.build_chain
       expect(bobs_boss.children).to eq [bob, sally]
-      expect(root.children).to eq [bobs_boss, simon]
     end
 
     it "will link directly the boss onto the employee" do
@@ -93,7 +92,15 @@ describe CommandChain do
 
   describe "formatting route" do
     it "adds an up arrow (->) for messaging a boss" do
-      expect(@chain.format_route(@chain.message(10, 5))).to eq "Bob -> Bob's Boss"
+      expect(@chain.format_route(@chain.message(10, 5))).to eq " Bob -> Bob's Boss "
+    end
+
+    it "adds a down arrow (<-) for messaging an employee from a boss" do
+      expect(@chain.format_route(@chain.message(5, 10))).to eq " Bob's Boss <- Bob "
+    end
+
+    it "can add arrows for both up and down" do
+      expect(@chain.format_route(@chain.message(10, 21))).to eq " Bob -> Bob's Boss -> Root <- Simon <- Paul "
     end
   end
 end
